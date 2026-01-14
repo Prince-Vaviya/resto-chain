@@ -122,14 +122,25 @@ const RegisterPage = () => {
             </button>
           </div>
         </form>
-        <div className="text-center text-sm">
-          <span className="text-gray-500">Already have an account? </span>
-          <Link
-            to="/login"
-            className="font-medium text-black hover:text-gray-700"
-          >
-            Sign in
-          </Link>
+        <div className="text-center text-sm space-y-2">
+          <div>
+            <span className="text-gray-500">Already have an account? </span>
+            <Link
+              to="/login"
+              className="font-medium text-black hover:text-gray-700"
+            >
+              Sign in
+            </Link>
+          </div>
+          <div className="pt-2 border-t border-gray-100">
+            <span className="text-gray-500">Are you an admin? </span>
+            <Link
+              to="/admin/login"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Admin Login
+            </Link>
+          </div>
         </div>
       </div>
     </div>

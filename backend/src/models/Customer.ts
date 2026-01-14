@@ -28,7 +28,7 @@ const CustomerSchema: Schema = new Schema({
             is_default: { type: Boolean, default: false },
         },
     ],
-});
+}, { timestamps: true });
 
 CustomerSchema.pre("save", async function () {
     if (!this.isModified("password")) {

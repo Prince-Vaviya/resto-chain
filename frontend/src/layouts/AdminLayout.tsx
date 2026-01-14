@@ -1,4 +1,5 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -9,8 +10,27 @@ import {
 import { useAuthStore } from "../store/authStore";
 
 const AdminLayout = () => {
-  const { logout } = useAuthStore();
+  const { logout, isAuthenticated, user, isLoading } = useAuthStore();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && (!isAuthenticated || !user?.isAdmin)) {
+      navigate("/admin/login");
+    }
+  }, [isAuthenticated, user, isLoading, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user?.isAdmin) {
+    return null;
+  }
 
   const sidebarLinks = [
     { name: "Dashboard", path: "/admin", icon: LayoutDashboard },

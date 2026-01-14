@@ -21,11 +21,13 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 import authRoutes from "./routes/authRoutes";
+import adminAuthRoutes from "./routes/adminAuthRoutes";
 import restaurantRoutes from "./routes/restaurantRoutes";
 import menuRoutes from "./routes/menuRoutes";
 import orderRoutes from "./routes/orderRoutes";
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/restaurant", restaurantRoutes);
 app.use("/api/menu", menuRoutes);
 app.use("/api/orders", orderRoutes);

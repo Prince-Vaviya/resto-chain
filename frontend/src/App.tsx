@@ -12,6 +12,7 @@ import AdminMenuPage from "./pages/admin/MenuPage";
 import CustomersPage from "./pages/admin/CustomersPage";
 import AdminOrdersPage from "./pages/admin/OrdersPage";
 import SettingsPage from "./pages/admin/SettingsPage";
+import AdminLoginPage from "./pages/auth/AdminLoginPage";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         {/* Auth Routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
       </Routes>
     </BrowserRouter>
   );

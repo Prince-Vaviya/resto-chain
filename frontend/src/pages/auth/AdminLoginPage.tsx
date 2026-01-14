@@ -1,28 +1,46 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../store/authStore";
 import { Loader2 } from "lucide-react";
+import api from "../../lib/api";
 
-const LoginPage = () => {
+const AdminLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login, isLoading } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
+
     try {
-      await login({ email, password });
-      navigate("/");
+      const response = await api.post("/admin/auth/login", { email, password });
+      // Store admin data in localStorage
+      localStorage.setItem(
+        "auth-storage",
+        JSON.stringify({
+          state: {
+            user: response.data,
+            isAuthenticated: true,
+            isLoading: false,
+          },
+          version: 0,
+        })
+      );
+      // Redirect to Admin Dashboard
+      navigate("/admin");
+      window.location.reload(); // Reload to update auth state
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
         <div className="text-center">
           <Link to="/" className="inline-flex items-center space-x-2">
@@ -31,9 +49,11 @@ const LoginPage = () => {
             </div>
           </Link>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            Welcome back
+            Admin Access
           </h2>
-          <p className="mt-2 text-sm text-gray-600">Sign in to your account</p>
+          <p className="mt-2 text-sm text-gray-600">
+            Sign in to manage your restaurant
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
@@ -85,28 +105,19 @@ const LoginPage = () => {
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                "Sign in"
+                "Sign in as Admin"
               )}
             </button>
           </div>
         </form>
-        <div className="text-center text-sm space-y-2">
-          <div>
-            <span className="text-gray-500">Don't have an account? </span>
+        <div className="text-center text-sm">
+          <div className="pt-4 border-t border-gray-100">
+            <span className="text-gray-500">Not an admin? </span>
             <Link
-              to="/register"
-              className="font-medium text-black hover:text-gray-700"
-            >
-              Sign up
-            </Link>
-          </div>
-          <div className="pt-2 border-t border-gray-100">
-            <span className="text-gray-500">Are you an admin? </span>
-            <Link
-              to="/admin/login"
+              to="/login"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
-              Admin Login
+              Go to Customer Login
             </Link>
           </div>
         </div>
@@ -115,4 +126,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default AdminLoginPage;
