@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 
-// In production, this URL should be an env variable
-const SOCKET_URL = "http://localhost:3001";
+// Use the same base URL as the API, removing the '/api' suffix
+const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || "http://localhost:3001";
 
 export const socket = io(SOCKET_URL, {
     withCredentials: true,
