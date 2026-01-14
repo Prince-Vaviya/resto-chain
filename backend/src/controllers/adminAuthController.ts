@@ -19,12 +19,13 @@ const registerAdmin = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (admin) {
-        generateToken(res, (admin._id as unknown) as string);
+        const token = generateToken(res, (admin._id as unknown) as string);
         res.status(201).json({
             _id: admin._id,
             name: admin.name,
             email: admin.email,
             isAdmin: true,
+            token, // Include token in response
         });
     } else {
         res.status(400).json({ message: "Invalid admin data" });
@@ -37,12 +38,13 @@ const loginAdmin = async (req: Request, res: Response): Promise<void> => {
     const admin = await Admin.findOne({ email }).select("+password");
 
     if (admin && (await admin.comparePassword(password))) {
-        generateToken(res, (admin._id as unknown) as string);
+        const token = generateToken(res, (admin._id as unknown) as string);
         res.json({
             _id: admin._id,
             name: admin.name,
             email: admin.email,
             isAdmin: true,
+            token, // Include token in response
         });
     } else {
         res.status(401).json({ message: "Invalid email or password" });

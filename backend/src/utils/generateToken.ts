@@ -9,9 +9,11 @@ const generateToken = (res: Response, userId: string) => {
     res.cookie("jwt", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV !== "development",
-        sameSite: "strict",
+        sameSite: "lax", // Changed from "strict" to "lax" for better cross-domain support
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
+
+    return token; // Return token so it can be included in response body
 };
 
 export default generateToken;

@@ -13,6 +13,7 @@ interface User {
 
 interface AuthState {
     user: User | null;
+    token: string | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (credentials: any) => Promise<void>;
@@ -24,6 +25,7 @@ export const useAuthStore = create<AuthState>()(
     persist(
         (set) => ({
             user: null,
+            token: null,
             isAuthenticated: false,
             isLoading: false,
 
@@ -31,8 +33,16 @@ export const useAuthStore = create<AuthState>()(
                 set({ isLoading: true });
                 try {
                     const response = await api.post("/auth/login", credentials);
+                    const { token, ...userData } = response.data;
+
+                    // Set the token in axios defaults for all future requests
+                    if (token) {
+                        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                    }
+
                     set({
-                        user: response.data,
+                        user: userData,
+                        token,
                         isAuthenticated: true,
                         isLoading: false,
                     });
@@ -46,8 +56,16 @@ export const useAuthStore = create<AuthState>()(
                 set({ isLoading: true });
                 try {
                     const response = await api.post("/auth/register", userData);
+                    const { token, ...user } = response.data;
+
+                    // Set the token in axios defaults for all future requests
+                    if (token) {
+                        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                    }
+
                     set({
-                        user: response.data,
+                        user,
+                        token,
                         isAuthenticated: true,
                         isLoading: false,
                     });
@@ -63,11 +81,21 @@ export const useAuthStore = create<AuthState>()(
                 } catch (error) {
                     console.error("Logout failed:", error);
                 }
-                set({ user: null, isAuthenticated: false });
+
+                // Remove the token from axios defaults
+                delete api.defaults.headers.common['Authorization'];
+
+                set({ user: null, token: null, isAuthenticated: false });
             },
         }),
         {
             name: "auth-storage",
+            onRehydrateStorage: () => (state) => {
+                // When the app reloads, restore the token to axios headers
+                if (state?.token) {
+                    api.defaults.headers.common['Authorization'] = `Bearer ${state.token}`;
+                }
+            },
         }
     )
 );

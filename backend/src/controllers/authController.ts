@@ -21,11 +21,12 @@ const registerCustomer = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (user) {
-        generateToken(res, (user._id as unknown) as string);
+        const token = generateToken(res, (user._id as unknown) as string);
         res.status(201).json({
             _id: user._id,
             name: user.name,
             email: user.email,
+            token, // Include token in response
         });
     } else {
         res.status(400).json({ message: "Invalid user data" });
@@ -38,11 +39,12 @@ const loginCustomer = async (req: Request, res: Response): Promise<void> => {
     const user = await Customer.findOne({ email }).select("+password");
 
     if (user && (await user.comparePassword(password))) {
-        generateToken(res, (user._id as unknown) as string);
+        const token = generateToken(res, (user._id as unknown) as string);
         res.json({
             _id: user._id,
             name: user.name,
             email: user.email,
+            token, // Include token in response
         });
     } else {
         res.status(401).json({ message: "Invalid email or password" });

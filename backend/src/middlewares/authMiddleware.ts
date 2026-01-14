@@ -9,7 +9,13 @@ export interface AuthenticatedRequest extends Request {
 export const protect = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     let token;
 
+    // Check for token in cookie (for local development)
     token = req.cookies.jwt;
+
+    // If no cookie token, check Authorization header (for production/cross-domain)
+    if (!token && req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+        token = req.headers.authorization.split(" ")[1];
+    }
 
     if (token) {
         try {
