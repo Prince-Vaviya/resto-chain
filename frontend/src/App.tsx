@@ -11,6 +11,7 @@ import ProfilePage from "./pages/ProfilePage";
 import AdminMenuPage from "./pages/admin/MenuPage";
 import CustomersPage from "./pages/admin/CustomersPage";
 import AdminOrdersPage from "./pages/admin/OrdersPage";
+import SettingsPage from "./pages/admin/SettingsPage";
 
 function App() {
   return (
@@ -31,7 +32,7 @@ function App() {
           <Route path="menu" element={<AdminMenuPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />
-          <Route path="settings" element={<div>Settings</div>} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
 
         {/* Auth Routes */}

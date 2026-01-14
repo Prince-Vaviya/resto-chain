@@ -16,6 +16,7 @@ const registerCustomer = async (req: Request, res: Response): Promise<void> => {
         name,
         email,
         phone,
+        address: req.body.address || "",
         password,
     });
 
@@ -64,7 +65,11 @@ const updateProfile = async (req: Request, res: Response) => {
         if (user) {
             user.name = req.body.name || user.name;
             user.phone = req.body.phone || user.phone;
-            user.email = req.body.email || user.email;
+            // @ts-ignore
+            user.address = req.body.address || user.address;
+            // Email is read-only for updates usually, but we keep logic if needed or strictly follow req
+            // User requested email read-only on frontend, backend can stay flexible or restrict. 
+            // Let's keep flexibility but frontend will restrict.
 
             if (req.body.password) {
                 user.password = req.body.password;
@@ -77,6 +82,8 @@ const updateProfile = async (req: Request, res: Response) => {
                 name: updatedUser.name,
                 email: updatedUser.email,
                 phone: updatedUser.phone,
+                // @ts-ignore
+                address: updatedUser.address,
             });
         } else {
             res.status(404).json({ message: "User not found" });
@@ -90,6 +97,9 @@ const getCustomers = async (req: Request, res: Response) => {
     try {
         const customers = await Customer.aggregate([
             {
+                $match: { isAdmin: { $ne: true } }
+            },
+            {
                 $lookup: {
                     from: "orders",
                     localField: "_id",
@@ -102,9 +112,27 @@ const getCustomers = async (req: Request, res: Response) => {
                     name: 1,
                     email: 1,
                     phone: 1,
+                    address: 1,
                     joinedAt: "$createdAt",
                     totalOrders: { $size: "$orders" },
-                    totalRevenue: { $sum: "$orders.total" }
+                    totalRevenue: { $sum: "$orders.total" },
+                    orders: {
+                        $map: {
+                            input: "$orders",
+                            as: "order",
+                            in: {
+                                _id: "$$order._id",
+                                order_number: "$$order.order_number",
+                                total: "$$order.total",
+                                status: "$$order.status",
+                                placed_at: "$$order.placed_at",
+                                items: "$$order.items",
+                                subtotal: "$$order.subtotal",
+                                taxes: "$$order.taxes",
+                                delivery_fee: "$$order.delivery_fee"
+                            }
+                        }
+                    }
                 }
             },
             { $sort: { totalRevenue: -1 } }

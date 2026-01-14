@@ -11,6 +11,7 @@ const ProfilePage = () => {
     name: "",
     email: "",
     phone: "",
+    address: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
@@ -21,11 +22,14 @@ const ProfilePage = () => {
         name: user.name || "",
         email: user.email || "",
         phone: user.phone || "", // Phone might not be in user type yet, need to check
+        address: user.address || "",
       });
     }
   }, [user]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -106,12 +110,16 @@ const ProfilePage = () => {
               <input
                 type="email"
                 name="email"
+                disabled
+                readOnly
                 value={formData.email}
-                onChange={handleChange}
-                className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-black focus:border-black transition-colors"
+                className="block w-full pl-10 pr-3 py-3 border border-gray-200 bg-gray-50 text-gray-500 rounded-xl cursor-not-allowed"
                 placeholder="john@example.com"
               />
             </div>
+            <p className="text-xs text-gray-400 mt-1">
+              Email cannot be changed
+            </p>
           </div>
 
           <div>
@@ -131,6 +139,20 @@ const ProfilePage = () => {
                 placeholder="+91 9876543210"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Residency Address
+            </label>
+            <textarea
+              name="address"
+              rows={3}
+              value={formData.address}
+              onChange={handleChange}
+              className="block w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-black focus:border-black transition-colors"
+              placeholder="123, Main St, City"
+            />
           </div>
 
           <button
