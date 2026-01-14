@@ -56,4 +56,66 @@ const logoutCustomer = (req: Request, res: Response) => {
     res.status(200).json({ message: "Logged out" });
 };
 
-export { registerCustomer, loginCustomer, logoutCustomer };
+const updateProfile = async (req: Request, res: Response) => {
+    try {
+        // @ts-ignore
+        const user = await Customer.findById(req.user._id);
+
+        if (user) {
+            user.name = req.body.name || user.name;
+            user.phone = req.body.phone || user.phone;
+            user.email = req.body.email || user.email;
+
+            if (req.body.password) {
+                user.password = req.body.password;
+            }
+
+            const updatedUser = await user.save();
+
+            res.json({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                phone: updatedUser.phone,
+            });
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+const getCustomers = async (req: Request, res: Response) => {
+    try {
+        const customers = await Customer.aggregate([
+            {
+                $lookup: {
+                    from: "orders",
+                    localField: "_id",
+                    foreignField: "customer_id",
+                    as: "orders"
+                }
+            },
+            {
+                $project: {
+                    name: 1,
+                    email: 1,
+                    phone: 1,
+                    joinedAt: "$createdAt",
+                    totalOrders: { $size: "$orders" },
+                    totalRevenue: { $sum: "$orders.total" }
+                }
+            },
+            { $sort: { totalRevenue: -1 } }
+        ]);
+        res.json(customers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+export { registerCustomer, loginCustomer, logoutCustomer, updateProfile, getCustomers };
+
+

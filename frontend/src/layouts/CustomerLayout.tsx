@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { ShoppingCart, User, Menu as MenuIcon } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { useCartStore } from "../store/cartStore";
@@ -6,6 +6,13 @@ import { useCartStore } from "../store/cartStore";
 const CustomerLayout = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const { items } = useCartStore();
+  const location = useLocation();
+
+  const navLinks = [
+    { name: "Menu", path: "/" },
+    { name: "My Orders", path: "/orders" },
+  ];
+
   return (
     <div className="min-h-screen bg-white font-sans antialiased">
       {/* Header */}
@@ -25,19 +32,23 @@ const CustomerLayout = () => {
             </div>
 
             {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link
-                to="/"
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
-              >
-                Menu
-              </Link>
-              <Link
-                to="/orders"
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
-              >
-                My Orders
-              </Link>
+            <nav className="hidden md:flex items-center space-x-2">
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.path;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${
+                      isActive
+                        ? "bg-black text-white shadow-md"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Actions */}
@@ -55,9 +66,11 @@ const CustomerLayout = () => {
 
               {isAuthenticated ? (
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-medium text-gray-900 hidden sm:block">
-                    {user?.name}
-                  </span>
+                  <Link to="/profile" className="hidden sm:block">
+                    <span className="text-sm font-medium text-gray-900 hover:text-gray-700">
+                      {user?.name}
+                    </span>
+                  </Link>
                   <button
                     onClick={() => logout()}
                     className="hidden sm:flex items-center space-x-2 px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200"

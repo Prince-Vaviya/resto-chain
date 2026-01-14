@@ -6,6 +6,11 @@ import DashboardPage from "./pages/admin/DashboardPage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import CartPage from "./pages/CartPage";
+import OrdersPage from "./pages/OrdersPage";
+import ProfilePage from "./pages/ProfilePage";
+import AdminMenuPage from "./pages/admin/MenuPage";
+import CustomersPage from "./pages/admin/CustomersPage";
+import AdminOrdersPage from "./pages/admin/OrdersPage";
 
 function App() {
   return (
@@ -15,15 +20,18 @@ function App() {
         <Route path="/" element={<CustomerLayout />}>
           <Route index element={<HomePage />} />
           <Route path="menu" element={<HomePage />} />
-          <Route path="orders" element={<div>Orders</div>} />
+          <Route path="orders" element={<OrdersPage />} />
           <Route path="cart" element={<CartPage />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />
-          <Route path="orders" element={<div>Admin Orders</div>} />
-          <Route path="menu" element={<div>Admin Menu</div>} />
+          <Route path="menu" element={<AdminMenuPage />} />
+          <Route path="customers" element={<CustomersPage />} />
+          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="settings" element={<div>Settings</div>} />
         </Route>
 
         {/* Auth Routes */}

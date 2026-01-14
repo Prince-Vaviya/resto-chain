@@ -1,20 +1,55 @@
-import { Trash2, Plus, Minus, ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { Trash2, Plus, Minus, ArrowLeft, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { useAuthStore } from "../store/authStore";
+import api from "../lib/api";
 
 const CartPage = () => {
   const { items, total, updateQuantity, removeItem } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleCheckout = () => {
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const { clearCart } = useCartStore();
+
+  const handleCheckout = async () => {
     if (!isAuthenticated) {
       navigate("/login");
       return;
     }
-    // Proceed to checkout (Navigate to future Checkout page or API call)
-    alert("Checkout functionality coming soon (Order API pending)");
+
+    setIsCheckingOut(true);
+    try {
+      // Calculate order details
+      const deliveryFee = 40;
+      const taxes = Math.round(total * 0.05);
+      const finalTotal = total + deliveryFee + taxes;
+
+      const orderData = {
+        items: items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        subtotal: total,
+        delivery_fee: deliveryFee,
+        taxes: taxes,
+        total: finalTotal,
+        payment_method: "COD", // Hardcoded for now
+        delivery_address: "Default Saved Address", // Hardcoded for now, would come from profile
+      };
+
+      await api.post("/orders", orderData);
+      clearCart();
+      navigate("/orders");
+    } catch (error) {
+      console.error("Checkout failed", error);
+      alert("Failed to place order. Please try again.");
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   if (items.length === 0) {
@@ -135,9 +170,17 @@ const CartPage = () => {
 
             <button
               onClick={handleCheckout}
-              className="w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-lg shadow-gray-900/20"
+              disabled={isCheckingOut}
+              className="w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-lg shadow-gray-900/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              Proceed to Checkout
+              {isCheckingOut ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Place Order (COD)"
+              )}
             </button>
           </div>
         </div>
