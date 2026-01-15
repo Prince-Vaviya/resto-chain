@@ -22,6 +22,12 @@ const io = new Server(httpServer, {
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
     },
+    // Optimize for faster real-time updates
+    transports: ['websocket', 'polling'], // Prefer websocket
+    pingTimeout: 30000,
+    pingInterval: 10000,
+    maxHttpBufferSize: 1e6, // 1MB
+    allowEIO3: true, // backwards compatibility
 });
 
 export { io };
