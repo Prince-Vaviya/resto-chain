@@ -119,6 +119,22 @@ const AdminLoginPage = () => {
             </button>
           </div>
         </form>
+
+        {/* Demo Credentials */}
+        <div className="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+          <p className="text-xs font-semibold text-indigo-900 mb-2">
+            🔑 Demo Admin Credentials
+          </p>
+          <div className="space-y-1 text-xs text-indigo-700">
+            <p>
+              <span className="font-medium">Email:</span> admin@example.com
+            </p>
+            <p>
+              <span className="font-medium">Password:</span> admin123
+            </p>
+          </div>
+        </div>
+
         <div className="text-center text-sm">
           <div className="pt-4 border-t border-gray-100">
             <span className="text-gray-500">Not an admin? </span>

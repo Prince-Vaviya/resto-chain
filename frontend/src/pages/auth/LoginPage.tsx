@@ -90,6 +90,22 @@ const LoginPage = () => {
             </button>
           </div>
         </form>
+
+        {/* Demo Credentials */}
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <p className="text-xs font-semibold text-blue-900 mb-2">
+            🎯 Demo Credentials
+          </p>
+          <div className="space-y-1 text-xs text-blue-700">
+            <p>
+              <span className="font-medium">Email:</span> customer@example.com
+            </p>
+            <p>
+              <span className="font-medium">Password:</span> customer123
+            </p>
+          </div>
+        </div>
+
         <div className="text-center text-sm space-y-2">
           <div>
             <span className="text-gray-500">Don't have an account? </span>
