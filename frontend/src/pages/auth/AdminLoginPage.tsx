@@ -17,18 +17,27 @@ const AdminLoginPage = () => {
 
     try {
       const response = await api.post("/admin/auth/login", { email, password });
-      // Store admin data in localStorage
+      const { token, ...userData } = response.data;
+
+      // Store admin data in localStorage with token (matching Zustand persist structure)
       localStorage.setItem(
         "auth-storage",
         JSON.stringify({
           state: {
-            user: response.data,
+            user: userData,
+            token: token, // This is critical for the request interceptor
             isAuthenticated: true,
             isLoading: false,
           },
           version: 0,
         })
       );
+
+      // Set token in axios defaults immediately
+      if (token) {
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      }
+
       // Redirect to Admin Dashboard
       navigate("/admin");
       window.location.reload(); // Reload to update auth state
